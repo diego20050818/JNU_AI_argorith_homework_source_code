@@ -13,27 +13,30 @@ def bfs_visualization(graph, start_node, end_node):
     G.add_edges_from(edges)
     
     pos = nx.spring_layout(G)
-    # 使用莫兰迪色系
+    # 使用莫兰迪色系绘制初始图
     nx.draw(G, pos, with_labels=True, node_color='#B0A8B9', edge_color='#A3A3A3')
     
-    visited = set()
-    queue = deque([(start_node, [start_node])])
+    visited = set()  # 记录已访问节点
+    queue = deque([(start_node, [start_node])])  # 队列存储当前节点及路径
     
     while queue:
         node, path = queue.popleft()
         if node not in visited:
             visited.add(node)
+            # 高亮当前访问的节点
             nx.draw_networkx_nodes(G, pos, nodelist=[node], node_color='#E6B8B7')
             plt.pause(0.5)
             
             for neighbor in graph[node]:
                 if neighbor not in visited:
                     if neighbor == end_node:
+                        # 找到目标节点，绘制最终路径
                         final_path = path + [neighbor]
                         nx.draw_networkx_edges(G, pos, edgelist=[(final_path[i], final_path[i+1]) for i in range(len(final_path)-1)], edge_color='red', width=2)
                         nx.draw_networkx_nodes(G, pos, nodelist=final_path, node_color='red')
                         plt.show()
                         return
+                    # 将邻居节点加入队列
                     queue.append((neighbor, path + [neighbor]))
                     nx.draw_networkx_edges(G, pos, edgelist=[(node, neighbor)], edge_color='#8C8C8C')
                     plt.pause(0.05)
@@ -41,6 +44,7 @@ def bfs_visualization(graph, start_node, end_node):
     plt.show()
 
 if __name__ == "__main__":
+    # 定义城市图
     city_graph = {
         '广州': ['珠海', '香港', '上海', '杭州','蒙德'],  
         '珠海': ['广州', '香港', '深圳', '澳门'],
@@ -64,4 +68,5 @@ if __name__ == "__main__":
         '武汉': ['北京', '广州', '上海'],
         '南京': ['上海', '杭州', '苏州']
     }
+    # 广州为起点，圣芙蕾雅为终点
     bfs_visualization(city_graph, '广州', '圣芙蕾雅')
