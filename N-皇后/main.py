@@ -24,10 +24,10 @@ def solveNQueens(n: int) -> list[list[str]]:
     return result
 
 if __name__ == '__main__':
-    n = 4
+    n = 10
     result = solveNQueens(n)
     for index,i in enumerate(result):
-        print(f"\n第{index}个情况：\n")
+        print(f"\n第{index+1}个情况：\n")
         for j in i:
             rprint(j)
             
