@@ -1,39 +1,88 @@
 import heapq  # 导入堆队列模块,用于优先队列实现
 import numpy as np  # 导入numpy用于数组操作
 import matplotlib.pyplot as plt  # 导入matplotlib用于可视化
-import matplotlib.colors as mcolors  # 导入颜色模块
+import networkx as nx  # 导入networkx用于图结构操作
 import imageio  # 导入imageio用于生成GIF动画
 import os  # 导入os模块用于文件操作
 
-# 可视化并保存为图片帧
-def visualize_grid_to_file(grid, path=None, visited=None, filename='frame.png'):
-    rows, cols = len(grid), len(grid[0])  # 获取网格的行数和列数
-    fig, ax = plt.subplots()  # 创建matplotlib画布和坐标轴
-    cmap = mcolors.ListedColormap(['white', 'black'])  # 创建颜色映射:白色表示可通行,黑色表示障碍
-    bounds = [-0.5, 0.5, 1.5]  # 设置颜色边界
-    norm = mcolors.BoundaryNorm(bounds, cmap.N)  # 创建标准化对象
+# 新的颜色方案
+COLORS = {
+    'background': '#F5F5F5',  # 浅灰色背景
+    'node': '#FFFFFF',        # 白色节点
+    'obstacle': '#2C3E50',    # 深蓝色障碍物
+    'start': '#E74C3C',       # 红色起点
+    'end': '#2ECC71',         # 绿色终点
+    'visited': '#3498DB',     # 蓝色已访问
+    'path': '#F1C40F',        # 黄色路径
+    'edge': '#BDC3C7'         # 灰色边
+}
 
-    ax.imshow(grid, cmap=cmap, norm=norm)  # 显示网格
-    ax.grid(which='major', color='gray', linestyle='-', linewidth=0.5)  # 添加网格线
-    ax.set_xticks([])  # 移除x轴刻度
-    ax.set_yticks([])  # 移除y轴刻度
+def create_graph_from_grid(grid):
+    """将网格转换为图结构"""
+    G = nx.Graph()
+    rows, cols = grid.shape
+    
+    # 添加节点
+    for i in range(rows):
+        for j in range(cols):
+            if grid[i][j] == 0:  # 可通行区域
+                G.add_node((i, j))
+    
+    # 添加边
+    for i in range(rows):
+        for j in range(cols):
+            if grid[i][j] == 0:
+                # 检查四个方向
+                for di, dj in [(-1,0), (1,0), (0,-1), (0,1)]:
+                    ni, nj = i + di, j + dj
+                    if 0 <= ni < rows and 0 <= nj < cols and grid[ni][nj] == 0:
+                        G.add_edge((i, j), (ni, nj))
+    
+    return G
 
-    if visited:  # 如果有已访问的节点
-        for (x, y) in visited:
-            ax.add_patch(plt.Rectangle((y - 0.5, x - 0.5), 1, 1, color='blue', alpha=0.3))  # 用蓝色标记已访问节点
-
-    if path:  # 如果有路径
-        for (x, y) in path:
-            ax.add_patch(plt.Rectangle((y - 0.5, x - 0.5), 1, 1, color='red', alpha=0.5))  # 用红色标记路径
-
-    plt.savefig(filename)  # 保存图片
-    plt.close()  # 关闭图形
+def visualize_graph_to_file(G, grid, path=None, visited=None, filename='frame.png'):
+    """可视化图结构并保存为图片"""
+    plt.figure(figsize=(10, 10))
+    plt.axis('off')
+    
+    # 设置背景色
+    plt.gca().set_facecolor(COLORS['background'])
+    
+    # 计算节点位置
+    pos = {node: (node[1], -node[0]) for node in G.nodes()}
+    
+    # 绘制边
+    nx.draw_networkx_edges(G, pos, edge_color=COLORS['edge'], width=1.5)
+    
+    # 绘制节点
+    node_colors = []
+    for node in G.nodes():
+        if node in visited:
+            node_colors.append(COLORS['visited'])
+        elif node in path:
+            node_colors.append(COLORS['path'])
+        elif node == start:
+            node_colors.append(COLORS['start'])
+        elif node == goal:
+            node_colors.append(COLORS['end'])
+        else:
+            node_colors.append(COLORS['node'])
+    
+    nx.draw_networkx_nodes(G, pos, node_color=node_colors, node_size=800)
+    
+    # 添加节点标签
+    labels = {node: f'({node[0]},{node[1]})' for node in G.nodes()}
+    nx.draw_networkx_labels(G, pos, labels, font_size=8)
+    
+    plt.savefig(filename, dpi=100, bbox_inches='tight')
+    plt.close()
 
 # A* 搜索算法实现 + 生成GIF动画
-def astar_with_gif(grid, start, goal, gif_name='astar.gif'):
+def astar_with_gif(grid, start, goal, gif_name='astar_search.gif'):
     def h(pos):  # 启发式函数:计算曼哈顿距离
         return abs(pos[0] - goal[0]) + abs(pos[1] - goal[1])
 
+    G = create_graph_from_grid(grid)
     open_set = []  # 初始化开放列表
     heapq.heappush(open_set, (h(start), 0, start))  # 将起点加入开放列表
     came_from = {}  # 用于记录路径
@@ -53,7 +102,7 @@ def astar_with_gif(grid, start, goal, gif_name='astar.gif'):
 
         # 生成当前状态的可视化帧
         frame_file = os.path.join(frame_dir, f"frame_{frame_count:03d}.png")
-        visualize_grid_to_file(grid, visited=visited, filename=frame_file)
+        visualize_graph_to_file(G, grid, visited=visited, filename=frame_file)
         frames.append(frame_file)
         frame_count += 1
 
@@ -65,22 +114,19 @@ def astar_with_gif(grid, start, goal, gif_name='astar.gif'):
             path.append(start)
             # 生成最终路径的可视化帧
             frame_file = os.path.join(frame_dir, f"frame_{frame_count:03d}.png")
-            visualize_grid_to_file(grid, path[::-1], visited, filename=frame_file)
+            visualize_graph_to_file(G, grid, path[::-1], visited, filename=frame_file)
             frames.append(frame_file)
             break
 
         # 探索相邻节点
-        for dx, dy in [(-1,0),(1,0),(0,-1),(0,1)]:  # 上下左右四个方向
-            neighbor = (current[0] + dx, current[1] + dy)
-            # 检查邻居节点是否有效且可通行
-            if (0 <= neighbor[0] < len(grid)) and (0 <= neighbor[1] < len(grid[0])) and grid[neighbor[0]][neighbor[1]] == 0:
-                tentative_g = g + 1  # 计算新的g值
-                # 如果找到更好的路径或是新节点
-                if neighbor not in g_score or tentative_g < g_score[neighbor]:
-                    g_score[neighbor] = tentative_g  # 更新g值
-                    f_score = tentative_g + h(neighbor)  # 计算f值
-                    heapq.heappush(open_set, (f_score, tentative_g, neighbor))  # 加入开放列表
-                    came_from[neighbor] = current  # 记录路径
+        for neighbor in G.neighbors(current):
+            tentative_g = g + 1  # 计算新的g值
+            # 如果找到更好的路径或是新节点
+            if neighbor not in g_score or tentative_g < g_score[neighbor]:
+                g_score[neighbor] = tentative_g  # 更新g值
+                f_score = tentative_g + h(neighbor)  # 计算f值
+                heapq.heappush(open_set, (f_score, tentative_g, neighbor))  # 加入开放列表
+                came_from[neighbor] = current  # 记录路径
 
     # 生成GIF动画
     images = [imageio.v2.imread(frame) for frame in frames]

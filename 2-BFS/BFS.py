@@ -68,5 +68,29 @@ if __name__ == "__main__":
         '武汉': ['北京', '广州', '上海'],
         '南京': ['上海', '杭州', '苏州']
     }
+
+    city_graph_example = {
+        'Arad': ['Zerind', 'Sibiu', 'Timisoara'],
+        'Zerind': ['Arad', 'Oradea'],
+        'Oradea': ['Zerind', 'Sibiu'],
+        'Sibiu': ['Arad', 'Oradea', 'Fagaras', 'Rimnicu Vilcea'],
+        'Timisoara': ['Arad', 'Lugoj'],
+        'Lugoj': ['Timisoara', 'Mehadia'],
+        'Mehadia': ['Lugoj', 'Drobeta'],
+        'Drobeta': ['Mehadia', 'Craiova'],
+        'Craiova': ['Drobeta', 'Rimnicu Vilcea', 'Pitesti'],
+        'Rimnicu Vilcea': ['Sibiu', 'Craiova', 'Pitesti'],
+        'Fagaras': ['Sibiu', 'Bucharest'],
+        'Pitesti': ['Rimnicu Vilcea', 'Craiova', 'Bucharest'],
+        'Bucharest': ['Fagaras', 'Pitesti', 'Giurgiu', 'Urziceni'],
+        'Giurgiu': ['Bucharest'],
+        'Urziceni': ['Bucharest', 'Hirsova', 'Vaslui'],
+        'Hirsova': ['Urziceni', 'Eforie'],
+        'Eforie': ['Hirsova'],
+        'Vaslui': ['Urziceni', 'Iasi'],
+        'Iasi': ['Vaslui', 'Neamt'],
+        'Neamt': ['Iasi']
+    }
+
     # 广州为起点，圣芙蕾雅为终点
-    bfs_visualization(city_graph, '广州', '圣芙蕾雅')
+    bfs_visualization(city_graph_example, 'Arad', 'Bucharest')

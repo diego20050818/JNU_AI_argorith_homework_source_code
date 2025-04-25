@@ -18,32 +18,30 @@ CURRENT_NODE_COLOR = (216, 167, 177)  # 莫兰迪红
 PATH_COLOR = (247, 220, 180)  # 莫兰迪黄
 
 # 定义城市图（有向图）
-city_graph = {
-    '广州': ['珠海', '香港', '上海', '杭州', '蒙德'],
-    '珠海': ['广州', '香港', '深圳', '澳门'],
-    '北京': ['上海', '杭州', '广州', '香港'],
-    '上海': ['北京', '杭州', '广州', '深圳'],
-    '杭州': ['北京', '上海', '广州', '苏州'],
-    '香港': ['广州', '珠海', '深圳', '澳门'],
-    '深圳': ['珠海', '香港', '广州', '上海'],
-    '澳门': ['珠海', '香港'],
-    '奥么恩': ['蒙德', '贝洛伯格', '稻妻'],
-    '蒙德': ['奥么恩', '贝洛伯格', '圣芙蕾雅', '广州'],
-    '贝洛伯格': ['奥么恩', '蒙德', '稻妻'],
-    '稻妻': ['奥么恩', '贝洛伯格', '圣芙蕾雅'],
-    '圣芙蕾雅': ['蒙德', '稻妻', '罗浮'],
-    '罗浮': ['圣芙蕾雅', '匹诺康尼', '翁法罗斯'],
-    '匹诺康尼': ['罗浮', '翁法罗斯'],
-    '翁法罗斯': ['罗浮', '匹诺康尼'],
-    '苏州': ['杭州', '上海'],
-    '成都': ['广州', '北京', '上海'],
-    '重庆': ['成都', '上海', '深圳'],
-    '武汉': ['北京', '广州', '上海'],
-    '南京': ['上海', '杭州', '苏州']
+city_graph_example = {
+    'Arad': ['Zerind', 'Sibiu', 'Timisoara'],
+    'Zerind': ['Arad', 'Oradea'],
+    'Oradea': ['Zerind', 'Sibiu'],
+    'Sibiu': ['Arad', 'Oradea', 'Fagaras', 'Rimnicu Vilcea'],
+    'Timisoara': ['Arad', 'Lugoj'],
+    'Lugoj': ['Timisoara', 'Mehadia'],
+    'Mehadia': ['Lugoj', 'Drobeta'],
+    'Drobeta': ['Mehadia', 'Craiova'],
+    'Craiova': ['Drobeta', 'Rimnicu Vilcea', 'Pitesti'],
+    'Rimnicu Vilcea': ['Sibiu', 'Craiova', 'Pitesti'],
+    'Fagaras': ['Sibiu', 'Bucharest'],
+    'Pitesti': ['Rimnicu Vilcea', 'Craiova', 'Bucharest'],
+    'Bucharest': ['Fagaras', 'Pitesti', 'Giurgiu', 'Urziceni'],
+    'Giurgiu': ['Bucharest'],
+    'Urziceni': ['Bucharest', 'Hirsova', 'Vaslui'],
+    'Hirsova': ['Urziceni', 'Eforie'],
+    'Eforie': ['Hirsova'],
+    'Vaslui': ['Urziceni', 'Iasi'],
+    'Iasi': ['Vaslui', 'Neamt'],
+    'Neamt': ['Iasi']
 }
-
 # 使用networkx创建有向图并计算节点位置
-G = nx.DiGraph(city_graph)
+G = nx.DiGraph(city_graph_example)
 raw_pos = nx.spring_layout(G, k=0.6, scale=1.0, center=(0, 0))
 
 # 调整位置确保节点在窗口内
@@ -135,8 +133,8 @@ def draw_nodes(screen, G, pos, current_path, current_node, alpha):
 
 # 主循环
 def main():
-    start = '广州'
-    end = '翁法罗斯'
+    start = 'Arad'
+    end = 'Bucharest'
     running = True
     shortest_path = None
     

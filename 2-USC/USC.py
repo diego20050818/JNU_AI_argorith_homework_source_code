@@ -42,27 +42,26 @@ def usc_visualization(graph, start_node, end_node):
     plt.show()
 
 if __name__ == "__main__":
-    city_graph = {
-        '广州': ['珠海', '香港', '上海', '杭州','蒙德'],  
-        '珠海': ['广州', '香港', '深圳', '澳门'],
-        '北京': ['上海', '杭州', '广州', '香港'],
-        '上海': ['北京', '杭州', '广州', '深圳'],
-        '杭州': ['北京', '上海', '广州', '苏州'],
-        '香港': ['广州', '珠海', '深圳', '澳门'],
-        '深圳': ['珠海', '香港', '广州', '上海'],
-        '澳门': ['珠海', '香港','翁法罗斯'],
-        '尼伯龙根': ['蒙德', '贝洛伯格', '稻妻'],
-        '蒙德': ['尼伯龙根', '贝洛伯格', '圣芙蕾雅','广州'], 
-        '贝洛伯格': ['尼伯龙根', '蒙德', '稻妻'],
-        '稻妻': ['尼伯龙根', '贝洛伯格', '圣芙蕾雅'],
-        '圣芙蕾雅': ['蒙德', '稻妻', '罗浮'],
-        '罗浮': ['圣芙蕾雅', '匹诺康尼', '翁法罗斯'],
-        '匹诺康尼': ['罗浮', '翁法罗斯'],
-        '翁法罗斯': ['罗浮', '匹诺康尼'],
-        '苏州': ['杭州', '上海'],
-        '成都': ['广州', '北京', '上海'],
-        '重庆': ['成都', '上海', '深圳'],
-        '武汉': ['北京', '广州', '上海'],
-        '南京': ['上海', '杭州', '苏州']
+    city_graph_example = {
+        'Arad': ['Zerind', 'Sibiu', 'Timisoara'],
+        'Zerind': ['Arad', 'Oradea'],
+        'Oradea': ['Zerind', 'Sibiu'],
+        'Sibiu': ['Arad', 'Oradea', 'Fagaras', 'Rimnicu Vilcea'],
+        'Timisoara': ['Arad', 'Lugoj'],
+        'Lugoj': ['Timisoara', 'Mehadia'],
+        'Mehadia': ['Lugoj', 'Drobeta'],
+        'Drobeta': ['Mehadia', 'Craiova'],
+        'Craiova': ['Drobeta', 'Rimnicu Vilcea', 'Pitesti'],
+        'Rimnicu Vilcea': ['Sibiu', 'Craiova', 'Pitesti'],
+        'Fagaras': ['Sibiu', 'Bucharest'],
+        'Pitesti': ['Rimnicu Vilcea', 'Craiova', 'Bucharest'],
+        'Bucharest': ['Fagaras', 'Pitesti', 'Giurgiu', 'Urziceni'],
+        'Giurgiu': ['Bucharest'],
+        'Urziceni': ['Bucharest', 'Hirsova', 'Vaslui'],
+        'Hirsova': ['Urziceni', 'Eforie'],
+        'Eforie': ['Hirsova'],
+        'Vaslui': ['Urziceni', 'Iasi'],
+        'Iasi': ['Vaslui', 'Neamt'],
+        'Neamt': ['Iasi']
     }
-    usc_visualization(city_graph, '广州', '圣芙蕾雅')
+    usc_visualization(city_graph_example, 'Arad', 'Bucharest')
